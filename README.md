@@ -11,8 +11,6 @@ Análisis de percolación de paisaje basado en la ubicación y distancias entre 
 * vegan
 * igraph
 
-- - -
-
 ## Ejemplo
 
 Para analizar un grupo de parches distribuidos uniformemente en el paisaje.
@@ -23,7 +21,7 @@ x <- patchCluster(100)
 
 El objeto x es una lista con varias cosillas.
 
-## Salida gráfica:
+### Salida gráfica:
 
 
 ![](https://github.com/jumanbar/patch-graph/raw/master/runif1000.png)
