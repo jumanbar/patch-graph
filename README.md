@@ -26,6 +26,7 @@ Ejemplo:
 ![](https://github.com/jumanbar/patch-graph/raw/master/runif1000.png)
 
 La salida gráfica muestra (x panel):
+
 * Los parches
 * El Minimum Spaning Tree (MST) obtenido a partir de los parches (en base a un grafo cuyos links tienen un peso == distancia geográfica).
 * Distribución de los pesos (distancias) de los links en el MST
