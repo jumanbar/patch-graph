@@ -1,6 +1,7 @@
 Funciones para hacer un análisis de percolación de paisaje basado en la ubicación y distancias entre parches.
 
 Función principal: patchCluster
+Requiere: vegan, igraph
 
 Ejemplo:
 # Para analizar un grupo de parches distribuidos uniformemente en el paisaje.
