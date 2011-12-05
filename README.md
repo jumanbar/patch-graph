@@ -3,28 +3,25 @@ Motivo:
 
 Funciones para hacer un análisis de percolación de paisaje basado en la ubicación y distancias entre parches.
 
-Función principal:
-------------------
+__Función principal:__
 
-__patchCluster__
+patchCluster
 
-
-Requiere:
----------
+__Requiere:__
 
 * vegan
 * igraph
 
+__Ejemplo:__
+
+`# Para analizar un grupo de parches distribuidos uniformemente en el paisaje.`
+`x <- patchCluster(100)`
+
+__Salida gráfica:__
+
 Ejemplo:
-# Para analizar un grupo de parches distribuidos uniformemente en el paisaje.
-x <- patchCluster(100)
 
-Salida gráfica:
----------------
-
-Ejemplo:
-
-![](https://github.com/jumanbar/patch-graph/blob/master/runif1000.png)
+![](https://github.com/jumanbar/patch-graph/raw/master/runif1000.png)
 
 La salida gráfica muestra (x panel):
 * Los parches
