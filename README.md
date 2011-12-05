@@ -44,5 +44,5 @@ La salida gráfica muestra (por panel):
 
             > G(i,j) = 1 <==> d(i,j) <= d_mov
 
-        2.  Línea negra Valor esperado de la cantidad de parches a los que tiene acceso un individuo.
+        2.  Línea negra: valor esperado de la cantidad de parches a los que tiene acceso un individuo.
 
