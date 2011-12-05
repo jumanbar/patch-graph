@@ -14,8 +14,10 @@ __Requiere:__
 
 __Ejemplo:__
 
-`# Para analizar un grupo de parches distribuidos uniformemente en el paisaje.`
-`x <- patchCluster(100)`
+```R
+# Para analizar un grupo de parches distribuidos uniformemente en el paisaje.
+x <- patchCluster(100)
+```
 
 __Salida gráfica:__
 
