@@ -27,21 +27,23 @@ __Salida gráfica:__
 
 ![](https://github.com/jumanbar/patch-graph/raw/master/runif1000.png)
 
-Para generar esto:
+Para generar esto, correr:
 
 ```R
-patchCluster(100)
+patchCluster(1000)
 ```
 
-La salida gráfica muestra (x panel):
+La salida gráfica muestra (por panel):
 
 1.  Los parches
 2.  El Minimum Spaning Tree (MST) obtenido a partir de los parches (en base a un grafo cuyos links tienen un peso == distancia geográfica).
 3.  Distribución de los pesos (distancias) de los links en el MST
 4.  Gráfica de percolación:
-    *  Número de componentes del grafo (línea gris) construido así:
+    *   Eje x: distancia de movimiento (d_mov)
+    *   Eje y:
+        1.  Línea gris: número de componentes del grafo construido así:
 
-       <G(i,j) = 1 <==> d(i,j) <= d_movimiento (d_movimiento = eje x).>
+            > G(i,j) = 1 <==> d(i,j) <= d_mov
 
-    * Valor esperado de la cantidad de parches a los que tiene acceso un individuo con camacidad de
-       movimiento = d_movimiento.
+        2.  Valor esperado de la cantidad de parches a los que tiene acceso un individuo.
+
