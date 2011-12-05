@@ -28,6 +28,7 @@ __Salida gráfica:__
 ![](https://github.com/jumanbar/patch-graph/raw/master/runif1000.png)
 
 Para generar esto:
+
 ```R
 patchCluster(100)
 ```
@@ -39,6 +40,8 @@ La salida gráfica muestra (x panel):
 3.  Distribución de los pesos (distancias) de los links en el MST
 4.  Gráfica de percolación:
     *  Número de componentes del grafo (línea gris) construido así:
+
        <G(i,j) = 1 <==> d(i,j) <= d_movimiento (d_movimiento = eje x).>
+
     * Valor esperado de la cantidad de parches a los que tiene acceso un individuo con camacidad de
        movimiento = d_movimiento.
