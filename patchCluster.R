@@ -78,6 +78,7 @@ patchCluster <- function (npatch=10, puntos=runif,
     ncl[i]   <- cl$no
     cls[[i]] <- cl$csize
   }
+  expectPatches <- sapply(cls, expval)
   if (doplot) {
     par(mar=c(5, 4, 4, 2) + 0.1)
     den <- density(dists)
@@ -93,19 +94,18 @@ patchCluster <- function (npatch=10, puntos=runif,
     points(ncl ~ d_, type='s', lwd=5, col='#848484')
     segments(d_min, 1, d_min, npatch, lwd=2, lty=3)
     segments(d_max, 1, d_max, npatch, lwd=2, lty=3)
-    expectPatches <- sapply(cls, expval)
     lines(expectPatches ~ d_, type='s', lwd=5)
     text(d_max + .0005, npatch / 2, expression(d[max]), pos=4)
     text(d_min - .0005, npatch / 2, expression(d[min]), pos=2)
     
     par(mfcol=c(1,1), mar=c(5, 4, 4, 2) + 0.1)
   }
-  perc <- (d_max - d_min) / max(dis)
+  frac <- (d_max - d_min) / max(dis)
   slp  <- 1 / (d_max - d_min)
-  cat(' - (d_max - d_min) / max.dist =', round(perc, 4), '\n')
-  cat(' - Relative slope             =', round(slp, 4), '\n')
-  invisible(list(genera=puntos, puntos=pts, dists=dis,
-                 mst=mst, ncl=ncl, cls=cls,
+#   cat(' - (d_max - d_min) / max.dist =', round(frac, 4), '\n')
+#   cat(' - Relative slope             =', round(slp, 4), '\n')
+  invisible(list(genera=puntos, puntos=pts, dists=dists, frac=frac,
+                 mst=mst, ncl=ncl, cls=cls, slope=slp, dmin=d_min, dmax=d_max,
                  epatch=expectPatches))
 }
 
