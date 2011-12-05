@@ -19,7 +19,7 @@ Para analizar un grupo de parches distribuidos uniformemente en el paisaje.
 x <- patchCluster(100)
 ```
 
-El objeto x es una lista con varias cosillas.
+El objeto x es una lista con varias cosillas (se explicarán en un futuro).
 
 ### Salida gráfica:
 
