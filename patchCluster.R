@@ -26,6 +26,8 @@ mstClusterAnalysis <- function(mst, verbose=TRUE) {
 #   lineaE[1,]   <- c(d_i, 1)
 #   lineaE[nd_,] <- c(d_f, npatch)
   movDist      <- c(d_i, sort(dists), d_f)
+  if (movDist[1] < 0)
+    movDist[1] <- 1e-6
   for(i in 1:nd_) {
     salen <- which(dists > movDist[i])
     roto  <- delete.edges(mst, salen - 1)
@@ -35,24 +37,33 @@ mstClusterAnalysis <- function(mst, verbose=TRUE) {
   }
   epatch <- sapply(cls, expval)
   # epatch: Expected number of patches
-  ajuste <- fit2step(epatch, movDist)
-  ajuste$objective <- ajuste$objective / length(epatch)
-#   epSlps <- diff(epatch) / diff(movDist)
-#   frac   <- (d_max - d_min) / max(dis)
-#   
-#   slp    <- 1 / (d_max - d_min)
+
+  # Fitting models:
+  fstep  <- fit2step(epatch, movDist) # Step function
+  fhill  <- fit2hill(epatch, movDist) # Hill function
+  
+  # Correction:
+  stepSS <- fstep$objective / length(epatch)
+  if (class(fhill) == "nls") {
+    hillSS <- sum(resid(fhill) ** 2) / length(epatch)
+    hill.a <- coef(fhill)[1]
+    hill.k <- coef(fhill)[2]
+  } else {
+    hillSS <- hill.a <- hill.k <- NA
+  }
+  # This correction (the division) is made so as to make comparisons between
+  # systems with different number of patches.
+  
   if (verbose) {
-    cat(' - Square Sum from a step function =', round(ajuste$objective, 4), '\n')
-#     cat(' - Fraction of all max. dist. (d_max - d_min) / max.dist =', round(frac, 4), '\n')
-#     cat(' - Relative slope: 1 / (d_max - d_min)                   =', round(slp, 4), '\n')
-#     cat(' - Slopes summary:\n')
-#     print(summary(epSlps))
+    cat(' - Square Sum from a step function =', round(stepSS, 4), '\n')
+    cat(' - Step location parameter =', round(fstep$minimum, 4), '\n')
+    cat(' - Square Sum from a hill function =', round(hillSS, 4), '\n')
+    cat(' - Hill function exponent  =', round(hill.a, 4), '\n')
+    cat(' - Hill function location  =', round(hill.k, 4), '\n')
   }
   
-  out <- list(cls=cls, dmin=d_min, dmax=d_max, epatch=epatch, ncl=ncl,
-#               epSlps=epSlps, frac=frac,
-              movDist=movDist, fit=ajuste)
-#               slope=slp)
+  out <- list(cls=cls, dmin=d_min, dmax=d_max, epatch=epatch, fhill=fhill,
+              fstep=fstep, movDist=movDist, ncl=ncl)
   invisible(out)  
 }
 
@@ -160,6 +171,25 @@ expval <- function (x) {
   return(expvalue)
 }
 
+fit2hill <- function(epatch, movDist) {
+  ep <- epatch / max(epatch)
+#   ep <- epatch
+  e1 <- min(ep)
+  e2 <- max(ep)
+  md <- movDist
+  if (length(unique(md)) > 1) {
+    intento <- try(
+      out <- nls(ep ~ hill(md, a, k, min(ep), max(ep)),
+                 start=list(a=1, k=median(md)))
+    )
+    if (class(intento) == "try-error")
+      out <- NA
+  } else {
+    return('Perfect step function')
+  }
+  return(out)
+}
+
 fit2step <- function(epatch, movDist) {
   ep <- epatch / max(epatch)
   e1 <- min(ep)
@@ -171,6 +201,12 @@ fit2step <- function(epatch, movDist) {
     op <- list(minimum=unique(md), objective=0)
   }
   return(op)
+}
+
+hill <- function(x, a, k, ymin, ymax=1) {
+  y <- x ^ a / (x ^ a + k ^ a)
+  y <- ymax * (y + ymin * (1 - y))
+  return(y)
 }
 
 plot.patchClusterAnalysis <- function(x) {
@@ -214,8 +250,13 @@ plot.patchClusterAnalysis <- function(x) {
     points(ncl ~ movDist, type='s', lwd=5, col='#848484')
     segments(dmin, 1, dmin, npatch, lwd=2, lty=3)
     segments(dmax, 1, dmax, npatch, lwd=2, lty=3)
-    curve(stepFun(x, a=fit$minimum, min=min(epatch), max=max(epatch)),
-          n=2001, add=TRUE, col='#C2C2C2', lwd=2)          
+    curve(stepFun(x, a=fstep$minimum, min=min(epatch), max=max(epatch)),
+          n=2001, add=TRUE, col='#C2C2C2', lwd=2)
+    if (class(fhill) == "nls") {
+      ep <- epatch / max(epatch)
+      curve(hill(x, a=coef(fhill)[1], k=coef(fhill)[2], ymin=min(ep)) * 
+            max(epatch), n=2001, add=TRUE, col=1, lwd=2, lty=2)
+    }
     lines(epatch ~ movDist, type='s', lwd=5)
     text(dmax + .0005, npatch / 2, expression(d[max]), pos=4)
     text(dmin - .0005, npatch / 2, expression(d[min]), pos=2)
@@ -223,23 +264,41 @@ plot.patchClusterAnalysis <- function(x) {
     par(mfcol=c(1,1), mar=c(5, 4, 4, 2) + 0.1)
 }
 
-sampler <- function(reps=100, npatch=20, ptsFun=runif, ...) {
+sampler <- function(reps=100, npatch=20, ptsFun=runif, intMax=30, 
+                    verboso=TRUE, ...) {
   require(moments)
   require(igraph)
-  nombres <- c('var', 'skew', 'kurt', 'udist', 'stepFit')
+  nombres <- c('var', 'skew', 'kurt', 'udist', 'stepSS', 'hillSS', 'hillParam')
   tabla   <- matrix(0, reps, length(nombres))
   tabla   <- as.data.frame(tabla)
   names(tabla) <- nombres
-  for (i in 1:reps) {
+  i <- 1
+  while (i < reps + 1) {
+    int <- 1
+    cat('Rep:', i, '  intento:', int, '\n')
     pc <- patchCluster(npatch, puntos=ptsFun, doplot=FALSE, verbose=FALSE, ...)
-    dists <- get.edge.attribute(pc$mst, 'weight')
-    distFromUniform <- dists - punif(dists, min=pc$ca$dmin, max=pc$ca$dmax)
-    distFromUniform <- sqrt(mean(distFromUniform ^ 2))
-    tabla[i,] <- c(var(dists),
-                   skewness(dists),
-                   kurtosis(dists),
-                   distFromUniform,
-                   pc$ca$fit$objective)
+    if (class(pc$ca$fhill) == 'nls') {
+      dists <- get.edge.attribute(pc$mst, 'weight')
+      distFromUniform <- dists - punif(dists, min=pc$ca$dmin, max=pc$ca$dmax)
+      distFromUniform <- sqrt(mean(distFromUniform ^ 2))
+      stepSS <- pc$ca$fstep$objective / length(pc$ca$epatch)
+      hillSS <- sum(resid(pc$ca$fhill) ** 2) / length(pc$ca$epatch)
+      hparam <- coef(pc$ca$fhill)[1]
+      
+      tabla[i,] <- c(var(dists),
+                     skewness(dists),
+                     kurtosis(dists),
+                     distFromUniform,
+                     stepSS,
+                     hillSS,
+                     hparam)
+      i <- i + 1
+    } else {
+      int <- int + 1
+      cat('            intento:', int, '\n')
+      if (int > intMax)
+        i <- i + 1
+    }
   }
   print(summary(tabla))
   print(cor(tabla))
@@ -257,6 +316,6 @@ stepFun <- function(x, a=0, min=0, max=1) {
 
 stepSS <- function(a, x=movDist, y=epatch, ...) {
 # Step Function Sum of Squares
-  out <- sum(sqrt((stepFun(x, a, ...) - y) ** 2))
+  out <- sum((stepFun(x, a, ...) - y) ** 2)
   return(out)
 }
