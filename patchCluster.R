@@ -265,7 +265,7 @@ plot.patchClusterAnalysis <- function(x) {
 }
 
 sampler <- function(reps=100, npatch=20, ptsFun=runif, intMax=30, 
-                    verboso=TRUE, ...) {
+                    verbose=TRUE, ...) {
   require(moments)
   require(igraph)
   nombres <- c('var', 'skew', 'kurt', 'udist', 'stepSS', 'hillSS', 'hillParam')
@@ -300,9 +300,11 @@ sampler <- function(reps=100, npatch=20, ptsFun=runif, intMax=30,
         i <- i + 1
     }
   }
-  print(summary(tabla))
-  print(cor(tabla))
-  pairs(tabla)
+  if (verbose) {
+	  print(summary(tabla))
+	  print(cor(tabla))
+	  pairs(tabla)
+  }
   invisible(tabla)
 }
 
