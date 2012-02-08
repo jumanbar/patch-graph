@@ -268,7 +268,8 @@ sampler <- function(reps=100, npatch=20, ptsFun=runif, intMax=30,
                     verbose=TRUE, ...) {
   require(moments)
   require(igraph)
-  nombres <- c('var', 'skew', 'kurt', 'udist', 'stepSS', 'hillSS', 'hillParam')
+  nombres <- c('var', 'skew', 'kurt', 'udist', 'stepSS', 'hillSS',
+               'hillExp', 'hillLoc')
   tabla   <- matrix(0, reps, length(nombres))
   tabla   <- as.data.frame(tabla)
   names(tabla) <- nombres
