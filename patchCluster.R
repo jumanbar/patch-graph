@@ -113,7 +113,7 @@ makeGraphOnDists <- function(dis, pts, movDist) {
 	return(g)
 }
 
-makeIsoGrid <- function(n_, dist_, noiseFactor=0.1) {
+makeIsoGrid <- function(n_, dist_=1, noiseFactor=0.1) {
   xcor <- 0:(n_ - 1) * dist_ + dist_ / 4
   altura <- sin(pi / 3) * dist_
   xycoords <- matrix(0, n_ ** 2, 2)

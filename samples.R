@@ -27,41 +27,44 @@ samples$rnormSamp   <- rnormSamp
 samples$rlnormSamp  <- rlnormSamp
 samples$rparetoSamp <- rparetoSamp
 
-thillExp <- data.frame(iso0.25=isoSamp$nf_0.25$hillExp,
+thillExp <- data.frame(iso0.1=isoSamp$nf_0.1$hillExp,
+                       iso0.25=isoSamp$nf_0.25$hillExp,
                        iso0.5=isoSamp$nf_0.5$hillExp,
 				       iso1=isoSamp$nf_1$hillExp,
 				       iso2=isoSamp$nf_2$hillExp,
                        iso4=isoSamp$nf_4$hillExp,
-                       iso4=isoSamp$nf_6$hillExp,
+                       iso6=isoSamp$nf_6$hillExp,
                        iso8=isoSamp$nf_8$hillExp,
                        runif=samples$runifSamp$hillExp,
                        rnorm=samples$rnormSamp$hillExp,
                        rlnorm=samples$rlnormSamp$hillExp,
                        rpareto=samples$rparetoSamp$hillExp)
 
-thillLoc <- data.frame(iso0.25=isoSamp$nf_0.25$hillLoc,
-                         iso0.5=isoSamp$nf_0.5$hillLoc,
-				         iso1=isoSamp$nf_1$hillLoc,
-				         iso2=isoSamp$nf_2$hillLoc,
-                         iso4=isoSamp$nf_4$hillLoc,
-                         iso8=isoSamp$nf_6$hillLoc,
-                         iso8=isoSamp$nf_8$hillLoc,
-                         runif=samples$runifSamp$hillLoc,
-                         rnorm=samples$rnormSamp$hillLoc,
-                         rlnorm=samples$rlnormSamp$hillLoc,
-                         rpareto=samples$rparetoSamp$hillLoc)
+thillLoc <- data.frame(iso0.1=isoSamp$nf_0.1$hillLoc,
+                       iso0.25=isoSamp$nf_0.25$hillLoc,
+                       iso0.5=isoSamp$nf_0.5$hillLoc,
+				       iso1=isoSamp$nf_1$hillLoc,
+				       iso2=isoSamp$nf_2$hillLoc,
+                       iso4=isoSamp$nf_4$hillLoc,
+                       iso6=isoSamp$nf_6$hillLoc,
+                       iso8=isoSamp$nf_8$hillLoc,
+                       runif=samples$runifSamp$hillLoc,
+                       rnorm=samples$rnormSamp$hillLoc,
+                       rlnorm=samples$rlnormSamp$hillLoc,
+                       rpareto=samples$rparetoSamp$hillLoc)
 
-thillSS <- data.frame(iso0.25=isoSamp$nf_0.25$hillSS,
-                 iso0.5=isoSamp$nf_0.5$hillSS,
-                 iso1=isoSamp$nf_1$hillSS,
-                 iso2=isoSamp$nf_2$hillSS,
-                 iso4=isoSamp$nf_4$hillSS,
-                 iso8=isoSamp$nf_6$hillSS,
-                 iso8=isoSamp$nf_8$hillSS,
-                 runif=samples$runifSamp$hillSS,
-                 rnorm=samples$rnormSamp$hillSS,
-                 rlnorm=samples$rlnormSamp$hillSS,
-                 rpareto=samples$rparetoSamp$hillSS)
+thillSS <- data.frame(iso0.1=isoSamp$nf_0.1$hillSS,
+                      iso0.25=isoSamp$nf_0.25$hillSS,
+                      iso0.5=isoSamp$nf_0.5$hillSS,
+                      iso1=isoSamp$nf_1$hillSS,
+                      iso2=isoSamp$nf_2$hillSS,
+                      iso4=isoSamp$nf_4$hillSS,
+                      iso6=isoSamp$nf_6$hillSS,
+                      iso8=isoSamp$nf_8$hillSS,
+                      runif=samples$runifSamp$hillSS,
+                      rnorm=samples$rnormSamp$hillSS,
+                      rlnorm=samples$rlnormSamp$hillSS,
+                      rpareto=samples$rparetoSamp$hillSS)
 
 save(thillExp, file='thillExp.RData')
 save(thillLoc, file='thillLoc.RData')
