@@ -171,15 +171,9 @@ cf <- function(x) {
 
 }
 
-expval <- function (x) {
-# Extracts expected value from a vector of ocurrences
-  table(x) -> tab
-  sort(unique(x)) -> values
-  values * as.vector(tab) -> suma
-  suma / sum(suma) -> pr
-  sum(values * pr) -> expvalue
-  return(expvalue)
-}
+expval <- function (x)
+# Weighted mean with weights vector being the same as the input vector
+  weighted.mean(x, x)
 
 fit2hill <- function(epatch, movDist, ...) {
   ep <- epatch / max(epatch)
