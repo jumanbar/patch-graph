@@ -30,8 +30,8 @@ samples$rparetoSamp <- rparetoSamp
 thillExp <- data.frame(iso0.1=isoSamp$nf_0.1$hillExp,
                        iso0.25=isoSamp$nf_0.25$hillExp,
                        iso0.5=isoSamp$nf_0.5$hillExp,
-				       iso1=isoSamp$nf_1$hillExp,
-				       iso2=isoSamp$nf_2$hillExp,
+                       iso1=isoSamp$nf_1$hillExp,
+                       iso2=isoSamp$nf_2$hillExp,
                        iso4=isoSamp$nf_4$hillExp,
                        iso6=isoSamp$nf_6$hillExp,
                        iso8=isoSamp$nf_8$hillExp,
@@ -43,8 +43,8 @@ thillExp <- data.frame(iso0.1=isoSamp$nf_0.1$hillExp,
 thillLoc <- data.frame(iso0.1=isoSamp$nf_0.1$hillLoc,
                        iso0.25=isoSamp$nf_0.25$hillLoc,
                        iso0.5=isoSamp$nf_0.5$hillLoc,
-				       iso1=isoSamp$nf_1$hillLoc,
-				       iso2=isoSamp$nf_2$hillLoc,
+                       iso1=isoSamp$nf_1$hillLoc,
+                       iso2=isoSamp$nf_2$hillLoc,
                        iso4=isoSamp$nf_4$hillLoc,
                        iso6=isoSamp$nf_6$hillLoc,
                        iso8=isoSamp$nf_8$hillLoc,
@@ -66,16 +66,31 @@ thillSS <- data.frame(iso0.1=isoSamp$nf_0.1$hillSS,
                       rlnorm=samples$rlnormSamp$hillSS,
                       rpareto=samples$rparetoSamp$hillSS)
 
+tstepSS <- data.frame(iso0.1=isoSamp$nf_0.1$stepSS,
+                      iso0.25=isoSamp$nf_0.25$stepSS,
+                      iso0.5=isoSamp$nf_0.5$stepSS,
+                      iso1=isoSamp$nf_1$stepSS,
+                      iso2=isoSamp$nf_2$stepSS,
+                      iso4=isoSamp$nf_4$stepSS,
+                      iso6=isoSamp$nf_6$stepSS,
+                      iso8=isoSamp$nf_8$stepSS,
+                      runif=samples$runifSamp$stepSS,
+                      rnorm=samples$rnormSamp$stepSS,
+                      rlnorm=samples$rlnormSamp$stepSS,
+                      rpareto=samples$rparetoSamp$stepSS)
+
 save(thillExp, file='thillExp.RData')
 save(thillLoc, file='thillLoc.RData')
 save(thillSS,  file='thillSS.RData')
+save(tstepSS,  file='tstepSS.RData')
 save(samples,  file='samples.RData')
 rm(samples, isoSamp)
 
-boxplot(thillExp, ylim=c(0, 140))
-boxplot(thillExp, log='y')
-boxplot(thillSS, ylim=c(0, 0.0115))
-boxplot(thillSS, log='y')
+png('boxplot-hill-exp-step-ss.png', width=700, height=1100)
+par(mfrow=c(2, 1))
+boxplot(thillExp, log='y', main='Coeficiente de Hill', xlab='Tratamiento')
+boxplot(tstepSS, log='y', main='Suma de Cuadrados de Residuos respecto a función escalón', xlab='Tratamiento')
+dev.off()
 
 
 
