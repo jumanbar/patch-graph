@@ -26,72 +26,44 @@ samples$runifSamp   <- runifSamp
 samples$rnormSamp   <- rnormSamp
 samples$rlnormSamp  <- rlnormSamp
 samples$rparetoSamp <- rparetoSamp
-
-thillExp <- data.frame(iso0.1=isoSamp$nf_0.1$hillExp,
-                       iso0.25=isoSamp$nf_0.25$hillExp,
-                       iso0.5=isoSamp$nf_0.5$hillExp,
-                       iso1=isoSamp$nf_1$hillExp,
-                       iso2=isoSamp$nf_2$hillExp,
-                       iso4=isoSamp$nf_4$hillExp,
-                       iso6=isoSamp$nf_6$hillExp,
-                       iso8=isoSamp$nf_8$hillExp,
-                       runif=samples$runifSamp$hillExp,
-                       rnorm=samples$rnormSamp$hillExp,
-                       rlnorm=samples$rlnormSamp$hillExp,
-                       rpareto=samples$rparetoSamp$hillExp)
-
-thillLoc <- data.frame(iso0.1=isoSamp$nf_0.1$hillLoc,
-                       iso0.25=isoSamp$nf_0.25$hillLoc,
-                       iso0.5=isoSamp$nf_0.5$hillLoc,
-                       iso1=isoSamp$nf_1$hillLoc,
-                       iso2=isoSamp$nf_2$hillLoc,
-                       iso4=isoSamp$nf_4$hillLoc,
-                       iso6=isoSamp$nf_6$hillLoc,
-                       iso8=isoSamp$nf_8$hillLoc,
-                       runif=samples$runifSamp$hillLoc,
-                       rnorm=samples$rnormSamp$hillLoc,
-                       rlnorm=samples$rlnormSamp$hillLoc,
-                       rpareto=samples$rparetoSamp$hillLoc)
-
-thillSS <- data.frame(iso0.1=isoSamp$nf_0.1$hillSS,
-                      iso0.25=isoSamp$nf_0.25$hillSS,
-                      iso0.5=isoSamp$nf_0.5$hillSS,
-                      iso1=isoSamp$nf_1$hillSS,
-                      iso2=isoSamp$nf_2$hillSS,
-                      iso4=isoSamp$nf_4$hillSS,
-                      iso6=isoSamp$nf_6$hillSS,
-                      iso8=isoSamp$nf_8$hillSS,
-                      runif=samples$runifSamp$hillSS,
-                      rnorm=samples$rnormSamp$hillSS,
-                      rlnorm=samples$rlnormSamp$hillSS,
-                      rpareto=samples$rparetoSamp$hillSS)
-
-tstepSS <- data.frame(iso0.1=isoSamp$nf_0.1$stepSS,
-                      iso0.25=isoSamp$nf_0.25$stepSS,
-                      iso0.5=isoSamp$nf_0.5$stepSS,
-                      iso1=isoSamp$nf_1$stepSS,
-                      iso2=isoSamp$nf_2$stepSS,
-                      iso4=isoSamp$nf_4$stepSS,
-                      iso6=isoSamp$nf_6$stepSS,
-                      iso8=isoSamp$nf_8$stepSS,
-                      runif=samples$runifSamp$stepSS,
-                      rnorm=samples$rnormSamp$stepSS,
-                      rlnorm=samples$rlnormSamp$stepSS,
-                      rpareto=samples$rparetoSamp$stepSS)
-
-save(thillExp, file='thillExp.RData')
-save(thillLoc, file='thillLoc.RData')
-save(thillSS,  file='thillSS.RData')
-save(tstepSS,  file='tstepSS.RData')
 save(samples,  file='samples.RData')
-rm(samples, isoSamp)
+
+### HACER TABLAS
+makeTabla <- function(variable) {
+# Antes de definir esta función en la sesión hay que tener los objetos
+# isoSamp y samples en el espacio de trabajo.
+  tabla <- data.frame(iso0.1=isoSamp$nf_0.1[variable],
+                      iso0.25=isoSamp$nf_0.25[variable],
+                      iso0.5=isoSamp$nf_0.5[variable],
+                      iso1=isoSamp$nf_1[variable],
+                      iso2=isoSamp$nf_2[variable],
+                      iso4=isoSamp$nf_4[variable],
+                      iso6=isoSamp$nf_6[variable],
+                      iso8=isoSamp$nf_8[variable],
+                      runif=samples$runifSamp[variable],
+                      rnorm=samples$rnormSamp[variable],
+                      rlnorm=samples$rlnormSamp[variable],
+                      rpareto=samples$rparetoSamp[variable])
+  names(tabla) <- c('iso0.1', 'iso0.25', 'iso0.5', 'iso1', 'iso2', 'iso4', 'iso6', 'iso8', 'runif', 'rnorm', 'rlnorm', 'rpareto')
+  return(tabla)
+}
+
+vnames <- c("var", "skew", "kurt", "udist", "stepSS", "hillSS", "hillExp",
+            "hillLoc")
+
+for (i in 1:length(vnames)) {
+  name <- paste('t', vnames[i], sep='')
+  assign(name, makeTabla(vnames[i]))
+  save(name, file=paste(name, 'RData', sep='.'))
+}
+
+### ###
 
 png('boxplot-hill-exp-step-ss.png', width=700, height=1100)
 par(mfrow=c(2, 1))
 boxplot(thillExp, log='y', main='Coeficiente de Hill', xlab='Tratamiento')
 boxplot(tstepSS, log='y', main='Suma de Cuadrados de Residuos respecto a función escalón', xlab='Tratamiento')
 dev.off()
-
 
 
 
