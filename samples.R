@@ -1,3 +1,6 @@
+nreps  <- 2000
+npatch <- 200
+
 source('patchCluster.R')
 
 require(VGAM)
@@ -8,18 +11,18 @@ isoSamp <- vector('list', length(nf))
 names(isoSamp) <- paste('nf_', nf, sep='')
 
 for (i in 1:length(nf)) {
-  isoSamp[[i]] <- sampler(reps=500, npatch=150, ptsFun=makeIsoGrid, intMax=100,
+  isoSamp[[i]] <- sampler(reps=nreps, npatch=npatch, ptsFun=makeIsoGrid, intMax=100,
 	                      dist_=1, noiseFactor=nf[i])
 }
 save(isoSamp, file='isoSamp.RData')
 
 samples <- vector('list', 4)
 names(samples) <- list('runifSamp', 'rnormSamp', 'rlnormSamp', 'rparetoSamp')
-runifSamp   <- sampler(reps=500, ptsFun=runif,  intMax=50)
-rnormSamp   <- sampler(reps=500, ptsFun=rnorm,  intMax=50)
-rlnormSamp  <- sampler(reps=500, ptsFun=rlnorm, intMax=50)
-rparetoSamp <- sampler(reps=500, ptsFun=rpareto, intMax=50, polar=TRUE,
-                       location=0.01, shape=0.2)
+runifSamp   <- sampler(reps=nreps, ptsFun=runif,  intMax=50, npatch=npatch)
+rnormSamp   <- sampler(reps=nreps, ptsFun=rnorm,  intMax=50, npatch=npatch)
+rlnormSamp  <- sampler(reps=nreps, ptsFun=rlnorm, intMax=50, npatch=npatch)
+rparetoSamp <- sampler(reps=nreps, ptsFun=rpareto, intMax=50, polar=TRUE,
+                       location=0.01, shape=0.2, npatch=npatch)
 save(isoSamp, file='isoSamp.RData')                   
 
 samples$runifSamp   <- runifSamp
@@ -48,21 +51,22 @@ makeTabla <- function(variable) {
   return(tabla)
 }
 
-vnames <- c("var", "skew", "kurt", "udist", "stepSS", "hillSS", "hillExp",
-            "hillLoc")
+vnames <- c("var", "skew", "kurt", "udist", "stepRsq", "hillRsq", "hillExp",
+            "hillLoc", "hillSlope")
 
 for (i in 1:length(vnames)) {
   name <- paste('t', vnames[i], sep='')
   assign(name, makeTabla(vnames[i]))
-  save(name, file=paste(name, 'RData', sep='.'))
+  save(list=name, file=paste(name, 'RData', sep='.'))
 }
 
 ### ###
 
-png('boxplot-hill-exp-step-ss.png', width=700, height=1100)
-par(mfrow=c(2, 1))
-boxplot(thillExp, log='y', main='Coeficiente de Hill', xlab='Tratamiento')
-boxplot(tstepSS, log='y', main='Suma de Cuadrados de Residuos respecto a función escalón', xlab='Tratamiento')
+png('boxplot-hill-exp-step-rsq.png', width=700*.65, height=1650*.65)
+par(mfrow=c(3, 1))
+boxplot(thillSlope[-12], log='y', main='Pendiente de Hill | x=K', xlab='Tratamiento')
+boxplot(thillExp[-12], log='y', main='Coeficiente de Hill', xlab='Tratamiento')
+boxplot(tstepRsq[-12], main='R^2 respecto a función escalón', xlab='Tratamiento')
 dev.off()
 
 
