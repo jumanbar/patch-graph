@@ -12,19 +12,15 @@ mstClusterAnalysis <- function(mst, verbose=TRUE, ...) {
 # distancias de movimiento.
   require(igraph)
   dists <- get.edge.attribute(mst, 'weight')
+  dists <- dists / max(dists)
   d_min <- min(dists)
   d_max <- max(dists)
   dife  <- d_max - d_min
   d_i   <- d_min - .2 * dife
   d_f   <- d_max + .2 * dife
-#   movDist  <- seq(d_i, d_f, , nd_)
   nd_ <- length(dists) + 2
   ncl <- numeric(nd_)
   cls <- vector('list', nd_)
-
-#   lineaE       <- as.data.frame(matrix(0, nd_, 2))
-#   lineaE[1,]   <- c(d_i, 1)
-#   lineaE[nd_,] <- c(d_f, npatch)
   movDist      <- c(d_i, sort(dists), d_f)
   if (movDist[1] < 0)
     movDist[1] <- 1e-6
@@ -44,17 +40,17 @@ mstClusterAnalysis <- function(mst, verbose=TRUE, ...) {
   
   # Correction:
   if (class(fhill) %in% c("nls", "list")) {
-    hill.a <- cf(fhill)[1]
+    hill.h <- cf(fhill)[1]
     hill.k <- cf(fhill)[2]
   } else {
-    hillSS <- hill.a <- hill.k <- NA
+    hillSS <- hill.h <- hill.k <- NA
   }
   
   if (verbose) {
     cat(' - R Squared for Step Function   =', round(fstep$rsq, 4), '\n')
     cat(' - Step location parameter       =', round(fstep$minimum, 4), '\n')
     cat(' - R Squared for Hill Function   =', round(fhill$rsq, 4), '\n')
-    cat(' - Hill Function coefficient     =', round(hill.a, 4), '\n')
+    cat(' - Hill Function coefficient     =', round(hill.h, 4), '\n')
     cat(' - Hill Function location param  =', round(hill.k, 4), '\n')
   }
   
@@ -63,8 +59,7 @@ mstClusterAnalysis <- function(mst, verbose=TRUE, ...) {
   invisible(out)  
 }
 
-patchCluster <- function (npatch=10, puntos=runif,
-                          doplot=TRUE, polar=FALSE,
+patchCluster <- function (npatch=10, puntos=runif, doplot=TRUE, polar=FALSE,
                           verbose=TRUE, ...) {
   require(vegan)
   require(igraph)
@@ -194,26 +189,27 @@ fit2step <- function(epatch, movDist) {
   } else {
     out <- list(minimum=unique(md), objective=0, rsq=1)
   }
+  browser()
   out$rsq <- rsquared(ep, out$objective)
   return(out)
 }
 
-hill <- function(x, a, k, ymin, ymax=1) {
-  y <- x ^ a / (x ^ a + k ^ a)
+hill <- function(x, h, k, ymin=0, ymax=1) {
+  y <- x ^ h / (x ^ h + k ^ h)
   y <- ymax * (y + ymin * (1 - y))
   # ymax * y + ymax * ymin - ymax * ymin * y
   return(y)
 }
 
-hillderiv <- function(x, a, k, ymin, ymax=1) {
-  denom <- (x ^ a + k ^ a)
-  y <- (a * x ^ (n - 1)) / denom - (a * x ^ (2 * n - 1)) / denom ^ 2
+hillderiv <- function(x, h, k, ymin, ymax=1) {
+  denom <- (x ^ h + k ^ h)
+  y <- (h * x ^ (h - 1)) / denom - (h * x ^ (2 * h - 1)) / denom ^ 2
   ymax * y - ymax * ymin * y
 }
 
-hillSumSq <- function(pm=c(a=1, k=.5), x, y, ymin, ymax) {
+hillSumSq <- function(pm=c(h=1, k=.5), x, y, ymin, ymax) {
 # Hill Function Sum of Squares
-  out <- sum((hill(x, a=pm[1], k=pm[2], ymin=ymin, ymax=ymax) - y) ** 2)
+  out <- sum((hill(x, h=pm[1], k=pm[2], ymin=ymin, ymax=ymax) - y) ** 2)
   return(out)
 }
 
@@ -262,7 +258,7 @@ plot.patchClusterAnalysis <- function(x) {
           n=2001, add=TRUE, col='#C2C2C2', lwd=2)
     if (class(fhill) %in% c("nls", "list")) {
       ep <- epatch / max(epatch)
-      curve(hill(x, a=cf(fhill)[1], k=cf(fhill)[2], ymin=min(ep)) * 
+      curve(hill(x, h=cf(fhill)[1], k=cf(fhill)[2], ymin=min(ep)) * 
             max(epatch), n=2001, add=TRUE, col=1, lwd=2, lty=2)
     }
     lines(epatch ~ movDist, type='s', lwd=5)
@@ -331,7 +327,7 @@ stepFun <- function(x, a=0, min=0, max=1) {
   return(y)
 }
 
-stepSumSq <- function(a, x=movDist, y=epatch, ...) {
+stepSumSq <- function(a, x, y, ...) {
 # Step Function Sum of Squares
   out <- sum((stepFun(x, a, ...) - y) ** 2)
   return(out)

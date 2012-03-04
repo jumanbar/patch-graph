@@ -3,16 +3,14 @@ npatch <- 200
 
 source('patchCluster.R')
 
-require(VGAM)
-
 nf <- c(0.1, 0.25, 0.5, 1, 2, 4, 6, 8)
 isoSamp <- vector('list', length(nf))
 
 names(isoSamp) <- paste('nf_', nf, sep='')
 
 for (i in 1:length(nf)) {
-  isoSamp[[i]] <- sampler(reps=nreps, npatch=npatch, ptsFun=makeIsoGrid, intMax=100,
-	                      dist_=1, noiseFactor=nf[i])
+  isoSamp[[i]] <- sampler(reps=nreps, npatch=npatch, ptsFun=makeIsoGrid,
+                          intMax=100, dist_=1, noiseFactor=nf[i])
 }
 save(isoSamp, file='isoSamp.RData')
 
@@ -61,13 +59,35 @@ for (i in 1:length(vnames)) {
 }
 
 ### ###
+# sigmas <- function(tope, r, tf=1) {
+#   cr <- c(.12, .12, rep(0, 6))
+#   text(1:8 - 0.48 - cr, tope, labels=expression(sigma ^ 2 == ''), pos=4,
+#        cex=tf, family='serif')
+#   text(1:8 + 0.02 - cr, tope - r, labels=nf, pos=4, cex=tf, family='serif')
+# }
 
-png('boxplot-hill-exp-step-rsq.png', width=700*.65, height=1650*.65)
-par(mfrow=c(3, 1))
-boxplot(thillSlope[-12], log='y', main='Pendiente de Hill | x=K', xlab='Tratamiento')
-boxplot(thillExp[-12], log='y', main='Coeficiente de Hill', xlab='Tratamiento')
-boxplot(tstepRsq[-12], main='R^2 respecto a función escalón', xlab='Tratamiento')
-dev.off()
+# ths <- thillSlope
+# thl <- thillLoc
+# tsr <- tstepRsq
+# names(ths) <- c(paste('Iso', 1:8), 'U', 'N', 'lnN')
+# names(thl) <- names(ths)
+# names(tsr) <- names(thl)
+# png('boxplot-hill-exp-step-rsq.png', width=900, height=2100)
+# op <- par(mfrow=c(3, 1), oma=c(5, 0, 0, 0), mar=c(2, 2.5, 4, 2), cex.axis=1.2, 
+#           cex.main=1.5)
+# tf <- 1
+# boxplot(ths[-12], log='y', main='Pendiente máxima', xlab='',
+#         pch=4, boxwex=0.4)
+## sigmas(max(ths[-12]), 4)
+# boxplot(thl[-12], log='y', main='K', xlab='', pch=4, boxwex=0.4)
+# sigmas(0.07, 0, tf)
+# boxplot(tsr[-12], xlab='', pch=4, boxwex=0.4, main='R2 respecto a la función escalón')
+## sigmas(-0.65, 0)
+## mtext(expression(paste(R^2, ' respecto a función escalón')), line=1, font=2, cex=1)
+# mtext('Tratamiento', side=1, line=2, cex=1.5, outer=TRUE)
+# par(op)
+# dev.off()
+
 
 
 
