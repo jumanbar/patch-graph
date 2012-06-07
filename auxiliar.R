@@ -1,6 +1,6 @@
 mklands <- function(dim_=2, dist_=1, lmax_=2, n_=3, rdist_=3, type='fractal') {
-# ejemplo:
-#   plot(mklands())
+## ejemplo:
+##   plot(mklands())
   require(splancs, quietly=TRUE)
   require(ellipse, quietly=TRUE)
   n_ <- round(n_)

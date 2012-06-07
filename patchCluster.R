@@ -42,6 +42,7 @@ mstClusterAnalysis <- function(mst, verbose=TRUE, ...) {
   if (class(fhill) %in% c("nls", "list")) {
     hill.h <- cf(fhill)[1]
     hill.k <- cf(fhill)[2]
+    hill.s <- hill.h / (4 * hill.k)
   } else {
     hillSS <- hill.h <- hill.k <- NA
   }
@@ -52,6 +53,7 @@ mstClusterAnalysis <- function(mst, verbose=TRUE, ...) {
     cat(' - R Squared for Hill Function   =', round(fhill$rsq, 4), '\n')
     cat(' - Hill Function coefficient     =', round(hill.h, 4), '\n')
     cat(' - Hill Function location param  =', round(hill.k, 4), '\n')
+    cat(' - Hill Function max. slope      =', round(hill.s, 4), '\n')
   }
   
   out <- list(cls=cls, dmin=d_min, dmax=d_max, epatch=epatch, fhill=fhill,
@@ -189,15 +191,15 @@ fit2step <- function(epatch, movDist) {
   } else {
     out <- list(minimum=unique(md), objective=0, rsq=1)
   }
-  browser()
   out$rsq <- rsquared(ep, out$objective)
   return(out)
 }
 
-hill <- function(x, h, k, ymin=0, ymax=1) {
+hill <- function(x, h, k, s=NULL, ymin=0, ymax=1) {
+  if (!is.null(s))
+    h <- 4 * k * s
   y <- x ^ h / (x ^ h + k ^ h)
-  y <- ymax * (y + ymin * (1 - y))
-  # ymax * y + ymax * ymin - ymax * ymin * y
+  y <- y * (ymax - ymin) + ymin
   return(y)
 }
 
@@ -300,7 +302,7 @@ sampler <- function(reps=100, npatch=20, ptsFun=runif, intMax=30,
                      hillRsq,
                      hillExp,
                      hillLoc,
-		     hillSlope)
+		                 hillSlope)
       i <- i + 1
       int <- 1
     } else {
@@ -342,3 +344,7 @@ rsquared <- function(ep, SSerr) {
 #      ans$r.squared <- mss/(mss + rss)
 #         ans$adj.r.squared <- 1 - (1 - ans$r.squared) * ((n - 
 #             df.int)/rdf)
+pendienteHillLogLog <- function(h, ymax, ymin) {
+  D <- ymax - ymin
+  h * D * sqrt(ymin / ymax) / ((ymax + ymin) * sqrt(ymin / ymax) + 2 * ymin)
+}

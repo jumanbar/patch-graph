@@ -14,19 +14,16 @@ for (i in 1:length(nf)) {
 }
 save(isoSamp, file='isoSamp.RData')
 
-samples <- vector('list', 4)
-names(samples) <- list('runifSamp', 'rnormSamp', 'rlnormSamp', 'rparetoSamp')
+samples <- vector('list', 3)
+names(samples) <- list('runifSamp', 'rnormSamp', 'rlnormSamp')
 runifSamp   <- sampler(reps=nreps, ptsFun=runif,  intMax=50, npatch=npatch)
 rnormSamp   <- sampler(reps=nreps, ptsFun=rnorm,  intMax=50, npatch=npatch)
 rlnormSamp  <- sampler(reps=nreps, ptsFun=rlnorm, intMax=50, npatch=npatch)
-rparetoSamp <- sampler(reps=nreps, ptsFun=rpareto, intMax=50, polar=TRUE,
-                       location=0.01, shape=0.2, npatch=npatch)
 save(isoSamp, file='isoSamp.RData')                   
 
 samples$runifSamp   <- runifSamp
 samples$rnormSamp   <- rnormSamp
 samples$rlnormSamp  <- rlnormSamp
-samples$rparetoSamp <- rparetoSamp
 save(samples,  file='samples.RData')
 
 ### HACER TABLAS
@@ -43,9 +40,8 @@ makeTabla <- function(variable) {
                       iso8=isoSamp$nf_8[variable],
                       runif=samples$runifSamp[variable],
                       rnorm=samples$rnormSamp[variable],
-                      rlnorm=samples$rlnormSamp[variable],
-                      rpareto=samples$rparetoSamp[variable])
-  names(tabla) <- c('iso0.1', 'iso0.25', 'iso0.5', 'iso1', 'iso2', 'iso4', 'iso6', 'iso8', 'runif', 'rnorm', 'rlnorm', 'rpareto')
+                      rlnorm=samples$rlnormSamp[variable])
+  names(tabla) <- c('iso0.1', 'iso0.25', 'iso0.5', 'iso1', 'iso2', 'iso4', 'iso6', 'iso8', 'runif', 'rnorm', 'rlnorm')
   return(tabla)
 }
 
